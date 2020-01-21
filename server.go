@@ -11,31 +11,15 @@ import (
 const bufferSize = 1024
 
 func readIO(conn net.Conn) {
-	fileSize := 117338112
-	fmt.Println("Reciving file: ", "file.msi")
-	buf := make([]byte, bufferSize)
-	f, err := os.OpenFile("file.msi", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	defer f.Close()
-	if err != nil {
-		log.Println("Error opening file, ", err)
-		return
-	}
-	for fileSize > 0 {
-		n, err := conn.Read(buf)
+	buf := []byte("He00o world")
+	for {
+		_, err := conn.Read(buf)
 		if err != nil {
-			if err != io.EOF {
-				log.Println("Error reading stream: ", err)
-				return
-			}
-		}
-		_, ferr := f.Write(buf[:n])
-		if ferr != nil {
-			log.Println("Error writung to file, ", ferr)
+			fmt.Println(err)
 			return
 		}
-		fileSize -= n
+		fmt.Println(buf)
 	}
-	fmt.Println("Done!!")
 }
 
 func writeIO(conn net.Conn) {
@@ -46,6 +30,7 @@ func writeIO(conn net.Conn) {
 		log.Println("Error opening file, ", err)
 		return
 	}
+
 	/*
 		fi, err := f.Stat()
 		if err != nil {
