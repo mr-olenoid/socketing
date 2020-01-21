@@ -41,37 +41,12 @@ func readIO(conn net.Conn) {
 
 func writeIO(conn net.Conn) {
 	//buf := make([]byte, 0, 256)
-	//buf := []byte("Hello world")
-	f, err := os.Open("toSend.msi")
-	if err != nil {
-		log.Println("Error opening file, ", err)
-		return
-	}
-	/*
-		fi, err := f.Stat()
-		if err != nil {
-			// Could not obtain stat, handle error
-		}
-		fmt.Printf("The file is %d bytes long", fi.Size())
-	*/
-	defer f.Close()
-	buf := make([]byte, bufferSize)
+	buf := []byte("Hello world")
 	for {
-		n, err := f.Read(buf)
-		if err != nil {
-			if err != io.EOF {
-				log.Println("Error reading file ", err)
-				return
-			}
-		}
-		_, cerr := conn.Write(buf[:n])
+		_, cerr := conn.Write(buf)
 		if cerr != nil {
 			log.Println("Connection error, ", cerr)
 			return
-		}
-		if n < bufferSize {
-			fmt.Println("Done!!")
-			break
 		}
 	}
 }
@@ -89,11 +64,12 @@ func main() {
 		fmt.Println(err)
 	}
 	conn.SetKeepAlive(true)
-	conn.SetKeepAlivePeriod(10)
+	conn.SetKeepAlivePeriod(1 * time.Second)
 
 	go writeIO(conn)
 	go readIO(conn)
 	for {
-		time.Sleep(60)
+		time.Sleep(10 * time.Second)
+		//go readIO(conn)
 	}
 }
